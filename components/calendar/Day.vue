@@ -1,12 +1,33 @@
 <template>
 	<div class="day-wrap">
-    <button>+</button>
+    <div
+      :class="{active: dragging}"
+      @mousedown="startDrag"
+      @mousemove="move"
+      @dragenter="startDrag"
+      @mouseup="stopDrag">{{dragging}}</div>
   </div>
 </template>
 
 <script>
 export default {
-	name: "Day"
+	name: "Day",
+  props: ['dragging'],
+  methods: {
+    startDrag () {
+      this.$emit('set', true);
+    },
+    move (e) {
+      if (this.dragging) {
+        console.log(e);
+        // e.target.classList.add('active');
+        // console.log('move');
+      }
+    },
+    stopDrag () {
+      this.$emit('set', false);
+    }
+  }
 }
 </script>
 

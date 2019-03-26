@@ -28,7 +28,8 @@
         <ul v-for="weeks in 6" :key="weeks">
           <li v-for="dayinweek in 7"
           :key="dayinweek">
-            <day></day>
+            <day :dragging="dragging"
+                 @set="startDrag"></day>
           </li>
         </ul>
       </div>
@@ -53,6 +54,25 @@ export default {
   components: {
     Day,
     Logo
+  },
+  data () {
+    return {
+      dragging: false
+    }
+  },
+  methods: {
+    startDrag (value) {
+      this.dragging = value;
+    },
+    move (e) {
+      if (this.dragging) {
+        console.log(e.target);
+        // console.log('move');
+      }
+    },
+    stopDrag () {
+      this.dragging = false;
+    }
   }
 }
 </script>
@@ -97,7 +117,18 @@ section {
 
         li {
           flex: 1;
-          border: 1px solid red;
+
+          .day-wrap {
+            div {
+              height: 100%;
+              border: 1px solid red;
+            }
+
+            &.active {
+              background-color: red;
+            }
+          }
+
         }
       }
     }
