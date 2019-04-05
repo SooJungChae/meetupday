@@ -1,11 +1,9 @@
 <template>
 	<div class="day-wrap">
     <div
-      :class="{active: dragging}"
-      @mousedown="startDrag"
-      @mousemove="move"
-      @dragenter="startDrag"
-      @mouseup="stopDrag">{{dragging}}</div>
+      :class="{select: toggleSelect}"
+      @mousedown="onmousedown"
+      @mouseover="onmouseover">{{dragging}}</div>
   </div>
 </template>
 
@@ -13,19 +11,19 @@
 export default {
 	name: "Day",
   props: ['dragging'],
+  data () {
+	  return {
+      toggleSelect: false
+    }
+  },
   methods: {
-    startDrag () {
-      this.$emit('set', true);
+    onmousedown (e) {
+      this.toggleSelect = !this.toggleSelect;
     },
-    move (e) {
+    onmouseover (e) {
       if (this.dragging) {
-        console.log(e);
-        // e.target.classList.add('active');
-        // console.log('move');
+        this.toggleSelect = !this.toggleSelect;
       }
-    },
-    stopDrag () {
-      this.$emit('set', false);
     }
   }
 }
@@ -40,6 +38,10 @@ export default {
     width: 100%;
     height: 100%;
 
+  }
+
+  .select {
+    background-color: red;
   }
 }
 </style>

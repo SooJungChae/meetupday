@@ -14,7 +14,7 @@
     <section class="calendar-wrap">
       <div class="calendar">
       </div>
-      <div class="calendar">
+      <div class="calendar" @mousedown="startDrag" @mouseup="stopDrag">
         <!--ul*6>li.day$*7>button[click="toggleDay"]-->
         <ul>
           <li class="day1">Sun</li>
@@ -27,8 +27,11 @@
         </ul>
         <ul v-for="weeks in 6" :key="weeks">
           <li v-for="dayinweek in 7"
-          :key="dayinweek">
-            <day :dragging="dragging"
+              :key="dayinweek"
+              :class="{select: select}"
+          >
+            <day @mouseenter="enter"
+                 :dragging="dragging"
                  @set="startDrag"></day>
           </li>
         </ul>
@@ -57,18 +60,21 @@ export default {
   },
   data () {
     return {
+      select: false,
       dragging: false
     }
   },
   methods: {
+    enter (e) {
+      if (this.dragging) {
+        console.log('enter');
+      }
+    },
     startDrag (value) {
       this.dragging = value;
     },
-    move (e) {
-      if (this.dragging) {
-        console.log(e.target);
-        // console.log('move');
-      }
+    startDrag () {
+      this.dragging = true;
     },
     stopDrag () {
       this.dragging = false;
