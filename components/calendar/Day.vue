@@ -3,14 +3,15 @@
     <div
       :class="{select: toggleSelect}"
       @mousedown="onmousedown"
-      @mouseover="onmouseover">{{dragging}}</div>
+      @mouseover="onmouseover"
+    >{{value}}</div>
   </div>
 </template>
 
 <script>
 export default {
 	name: "Day",
-  props: ['dragging'],
+  props: ['dragging', 'value'],
   data () {
 	  return {
       toggleSelect: false
@@ -19,10 +20,12 @@ export default {
   methods: {
     onmousedown (e) {
       this.toggleSelect = !this.toggleSelect;
+      this.$emit('set', { index: this.value, value: this.toggleSelect});
     },
     onmouseover (e) {
       if (this.dragging) {
         this.toggleSelect = !this.toggleSelect;
+        this.$emit('set', { index: this.value, value: this.toggleSelect});
       }
     }
   }

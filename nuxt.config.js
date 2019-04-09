@@ -15,6 +15,10 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+    ],
+    script: [
+      { async: true, src: 'https://developers.kakao.com/sdk/js/kakao.min.js' },
+      { async: true, src: 'https://www.gstatic.com/firebasejs/5.9.3/firebase.js' }
     ]
   },
 

@@ -10,6 +10,9 @@
         사용자:
         <label>test</label>
       </div>
+      <div>
+        <button @click="sendKakaoLink">카카오톡 링크 보내기</button>
+      </div>
     </section>
     <section class="calendar-wrap">
       <div class="calendar">
@@ -25,14 +28,16 @@
           <li class="day6">Fri</li>
           <li class="day7">Sat</li>
         </ul>
-        <ul v-for="weeks in 6" :key="weeks">
+        <ul v-for="(weeks, weekIndex) in 6" :key="weeks">
           <li v-for="dayinweek in 7"
               :key="dayinweek"
               :class="{select: select}"
           >
-            <day @mouseenter="enter"
+            <day :value="(7 * weekIndex) + dayinweek"
+                 @mouseenter="enter"
                  :dragging="dragging"
-                 @set="startDrag"></day>
+                @set="setDrag"
+            ></day>
           </li>
         </ul>
       </div>
@@ -52,6 +57,7 @@
 <script>
 import Logo from '~/components/Logo.vue'
 import Day from "../components/calendar/Day";
+import firebase from 'firebase';
 
 export default {
   components: {
@@ -61,23 +67,88 @@ export default {
   data () {
     return {
       select: false,
-      dragging: false
+      dragging: false,
+      userId: 'test',
+      email: 'naanace@naver.com',
+      db: ''
     }
   },
+  mounted () {
+    if (!Kakao.Auth) {
+      Kakao.init('5cccc96ec27bdf694910e2cf25dacb3c');
+    }
+
+    var config = {
+      apiKey: "AIzaSyDN0uvqEL-NzJm4WLxCF5c0svOyCad0pl0",
+      authDomain: "meetupday.firebaseapp.com",
+      databaseURL: "https://meetupday.firebaseio.com",
+      projectId: "meetupday",
+      storageBucket: "meetupday.appspot.com",
+      messagingSenderId: "304960642409"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(config);
+    }
+
+    // Get a reference to the database service
+    this.db = firebase.database();
+  },
   methods: {
+    // TODO ~ 카카오톡으로 링크를 보내면.
+    // 카카오톡에서 링크로 들어오고
+    // 사용자 정보를 가저와서 사용자를 입력한다.
+
     enter (e) {
       if (this.dragging) {
         console.log('enter');
       }
     },
-    startDrag (value) {
-      this.dragging = value;
-    },
     startDrag () {
       this.dragging = true;
     },
     stopDrag () {
+      // select 된걸 저장한다.
       this.dragging = false;
+      firebase.database().ref('users/' + this.userId).set({
+        username: this.userId,
+        email: this.email,
+        selectedDays: {
+          2019: {
+            4: [1, 2, 3]
+          }
+        }
+      });
+    },
+    setDrag ({ index, value }) {
+      // TODO ~ 기록한다.
+      console.log(index, value);
+    },
+    sendKakaoLink () {
+      if (!Kakao.Auth) {
+        Kakao.init('5cccc96ec27bdf694910e2cf25dacb3c');
+      }
+      Kakao.Link.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: 'meetupday',
+          description: 'kakao link send',
+          imageUrl: 'http://mud-kage.kakao.co.kr/dn/Q2iNx/btqgeRgV54P/VLdBs9cvyn8BJXB3o7N8UK/kakaolink40_original.png',
+          link: {
+            mobileWebUrl: 'http://localhost:3000',
+            webUrl: 'http://localhost:3000'
+          }
+        },
+        buttons: [
+          {
+            title: '웹으로 보기',
+            link: {
+              mobileWebUrl: 'http://localhost:3000',
+              webUrl: 'http://localhost:3000'
+            }
+          }
+        ]
+      });
     }
   }
 }
