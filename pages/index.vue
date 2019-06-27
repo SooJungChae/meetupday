@@ -101,20 +101,16 @@ export default {
   methods: {
     loginFirebase () {
       const provider = new firebase.auth.GoogleAuthProvider();
-    
-      firebase.auth().signInWithPopup(provider)
-        .then((result) => {
-        const user = result.user;
-        this.$store.dispatch('user/setName', user.displayName);
-        
-      })
-        .catch((error) => {
-        console.error(error);
-      });
+  
+      this.signInWithPopup(provider);
     },
     loginFacebook () {
       const provider = new firebase.auth.FacebookAuthProvider();
-    
+  
+      this.signInWithPopup(provider);
+    },
+  
+    signInWithPopup (provider) {
       firebase.auth().signInWithPopup(provider)
         .then((result) => {
           const user = result.user;
