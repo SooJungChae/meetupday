@@ -16,6 +16,7 @@
       <div>
         <h3>소셜 로그인</h3>
         <button @click="loginFirebase()">구글 로그인 하기</button><br/>
+        <button @click="loginFacebook()">페이스북 로그인 하기</button><br/>
         안녕, <input type="text" :value="userName">
       </div>
     </section>
@@ -100,16 +101,25 @@ export default {
   methods: {
     loginFirebase () {
       const provider = new firebase.auth.GoogleAuthProvider();
-    
+  
+      this.signInWithPopup(provider);
+    },
+    loginFacebook () {
+      const provider = new firebase.auth.FacebookAuthProvider();
+  
+      this.signInWithPopup(provider);
+    },
+  
+    signInWithPopup (provider) {
       firebase.auth().signInWithPopup(provider)
         .then((result) => {
-        const user = result.user;
-        this.$store.dispatch('user/setName', user.displayName);
+          const user = result.user;
+          this.$store.dispatch('user/setName', user.displayName);
         
-      })
+        })
         .catch((error) => {
-        console.error(error);
-      });
+          console.error(error);
+        });
     },
   
     // TODO ~ 카카오톡으로 링크를 보내면.
