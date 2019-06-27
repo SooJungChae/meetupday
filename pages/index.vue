@@ -13,6 +13,11 @@
       <div>
         <button @click="sendKakaoLink">카카오톡 링크 보내기</button>
       </div>
+      <div>
+        <h3>소셜 로그인</h3>
+        <button @click="loginFirebase()">구글 로그인 하기</button><br/>
+        안녕, <input type="text" :value="userName">
+      </div>
     </section>
     <section class="calendar-wrap">
       <div class="calendar">
@@ -58,6 +63,7 @@
 import Logo from '~/components/Logo.vue'
 import Day from "../components/calendar/Day";
 import firebase from 'firebase';
+import { mapGetters } from 'vuex';
 
 export default {
   components: {
@@ -68,17 +74,17 @@ export default {
     return {
       select: false,
       dragging: false,
-      userId: 'test',
       email: 'naanace@naver.com',
       db: ''
     }
   },
-  mounted () {
-    if (!Kakao.Auth) {
-      Kakao.init('5cccc96ec27bdf694910e2cf25dacb3c');
-    }
-
-    var config = {
+  computed: {
+    ...mapGetters({
+      userName: 'user/name'
+    })
+  },
+  beforeMount () {
+    let config = {
       apiKey: "AIzaSyDN0uvqEL-NzJm4WLxCF5c0svOyCad0pl0",
       authDomain: "meetupday.firebaseapp.com",
       databaseURL: "https://meetupday.firebaseio.com",
@@ -86,15 +92,26 @@ export default {
       storageBucket: "meetupday.appspot.com",
       messagingSenderId: "304960642409"
     };
-
+  
     if (!firebase.apps.length) {
       firebase.initializeApp(config);
     }
-
-    // Get a reference to the database service
-    this.db = firebase.database();
   },
   methods: {
+    loginFirebase () {
+      const provider = new firebase.auth.GoogleAuthProvider();
+    
+      firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+        const user = result.user;
+        this.$store.dispatch('user/setName', user.displayName);
+        
+      })
+        .catch((error) => {
+        console.error(error);
+      });
+    },
+  
     // TODO ~ 카카오톡으로 링크를 보내면.
     // 카카오톡에서 링크로 들어오고
     // 사용자 정보를 가저와서 사용자를 입력한다.
@@ -110,8 +127,8 @@ export default {
     stopDrag () {
       // select 된걸 저장한다.
       this.dragging = false;
-      firebase.database().ref('users/' + this.userId).set({
-        username: this.userId,
+      firebase.database().ref('users/' + this.userName).set({
+        username: this.userName,
         email: this.email,
         selectedDays: {
           2019: {
